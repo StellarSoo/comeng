@@ -72,7 +72,7 @@
         
         <header class="text-center py-6 bg-white rounded-xl shadow-lg header-border">
             <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center">
-                <span class="heart-icon">💖</span> 조동사 + have p.p. 마스터 <span class="heart-icon">✨</span>
+                <span class="heart-icon">💖</span> 진주여고 학생들을 위한 조동사 + have p.p. 마스터 <span class="heart-icon">✨</span>
             </h1>
             <p class="text-lg text-gray-500 mt-2">✨ 실생활 퀴즈 풀고, 작문으로 연습하기! ✨</p>
         </header>
@@ -89,6 +89,10 @@
                 <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
                     <span class="font-semibold text-lg text-primary-pink">cannot have p.p.</span>: <span class="font-bold">~했을 리가 없다</span> (강한 부정!)
                 </div>
+                <!-- 추가된 내용: may/might have p.p. -->
+                <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
+                    <span class="font-semibold text-lg text-primary-pink">may/might have p.p.</span>: <span class="font-bold">~했을지도 모른다</span> (약한 추측)
+                </div>
                 <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
                     <span class="font-semibold text-lg text-primary-pink">should have p.p.</span>: <span class="font-bold">~했어야 했는데 (안 해서 후회)</span> (후회/유감)
                 </div>
@@ -102,8 +106,8 @@
         <section id="quiz-area" class="card bg-white p-8 rounded-2xl space-y-6">
             <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 flex items-center"><span class="heart-icon">📝</span> 실생활 퀴즈</h2>
             
-            <!-- 퀴즈 진행 상황 표시 -->
-            <p id="question-counter" class="text-lg text-secondary-purple font-medium">1/5</p>
+            <!-- 퀴즈 진행 상황 표시: 총 문제 수가 6개로 변경됨 -->
+            <p id="question-counter" class="text-lg text-secondary-purple font-medium">1/6</p> 
             
             <!-- 문제 내용 -->
             <div class="bg-light-bg p-6 rounded-2xl border-2 border-secondary-purple/50">
@@ -155,7 +159,7 @@
     </div>
 
     <script>
-        // 퀴즈 데이터 (실생활 예시로 업데이트) - 데이터는 유지됩니다.
+        // 퀴즈 데이터 (실생활 예시로 업데이트, 총 6문제)
         const quizData = [
             {
                 context: "Context: 네가 가장 좋아하는 아이돌 그룹의 콘서트 티켓팅에 실패했어. 네가 어제 좀 더 일찍 PC방에 갔어야 했다고 후회하고 있어.",
@@ -191,6 +195,14 @@
                 options: ["must have", "might have", "cannot have"],
                 answer: "might have",
                 explanation_kr: "답장이 없는 상황에 대해 '잠들었을지도 모른다'는 약한 추측을 나타내므로 'might have p.p.'가 가장 적절합니다."
+            },
+            {
+                // 새로 추가된 6번째 문제: may/might have p.p. 관련
+                context: "Context: 네가 어제 교실에 두고 온 지갑을 찾고 있어. 급식실에 놓고 왔을 수도 있고, 아니면 버스에서 잃어버렸을 수도 있어. 정확히 어디 있는지 확실하지 않아. (약한 추측)",
+                sentence: "I can't find my wallet. I ____ left it in the cafeteria, or maybe on the bus.",
+                options: ["should have", "must have", "may have"],
+                answer: "may have",
+                explanation_kr: "지갑을 잃어버린 상황에서 '급식실에 놓고 왔을지도 모른다'는 불확실한 가능성이나 약한 추측을 나타내므로 'may have p.p.'가 적절합니다."
             }
         ];
 
@@ -327,7 +339,7 @@
         function loadQuestion() {
             const currentQuestion = quizData[currentQuestionIndex];
             
-            // 문제 번호 업데이트
+            // 문제 번호 업데이트: quizData.length를 사용하여 총 문제 수 자동 반영
             questionCounter.textContent = `${currentQuestionIndex + 1}/${quizData.length}`;
             
             // 지문 업데이트
