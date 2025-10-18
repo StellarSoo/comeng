@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조동사 + have p.p. 마스터 (핑크 에디션)</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Noto Sans KR 폰트 사용 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FFF7F9; /* 아주 연한 핑크 배경 */
+        }
+        .card {
+            /* 더 부드럽고 핑크빛이 도는 그림자 */
+            box-shadow: 0 10px 30px -5px rgba(255, 184, 200, 0.7), 0 5px 10px -2px rgba(0, 0, 0, 0.05); 
+            transition: transform 0.3s ease;
+        }
+        .option-button {
+            transition: all 0.2s ease;
+        }
+        .option-button:hover {
+            transform: translateY(-3px) scale(1.02); /* 더 눈에 띄게 팝업 */
+            box-shadow: 0 6px 10px -2px rgba(214, 188, 250, 0.6); /* 라벤더 그림자 */
+        }
+        /* 퀴즈 정답/오답 표시 애니메이션 */
+        @keyframes bounce-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .feedback-message {
+            animation: bounce-in 0.4s ease-out;
+        }
+        .heart-icon {
+            display: inline-block;
+            margin-right: 8px;
+            color: #FFB8C8; /* 체리 블러썸 핑크 하트 */
+        }
+        .writing-prompt {
+            background-color: #F8FAFC;
+            border-left: 5px solid #D6BCFA; /* 소프트 라벤더 */
+            border-radius: 12px;
+        }
+        .header-border {
+            border-bottom: 2px dashed #FFB8C8;
+        }
+    </style>
+    <script>
+        // Tailwind Config for custom colors
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-pink': '#FFB8C8', /* 체리 블러썸 핑크 */
+                        'secondary-purple': '#D6BCFA', /* 소프트 라벤더 */
+                        'light-bg': '#FEFCE8', /* 부드러운 크림색 */
+                        'correct-green': '#A7F3D0', /* 민트색 */
+                        'incorrect-red': '#FECACA', /* 연한 빨강 */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 flex items-center justify-center min-h-screen">
+
+    <!-- 메인 컨테이너 -->
+    <div id="app" class="w-full max-w-4xl space-y-8">
+        
+        <header class="text-center py-6 bg-white rounded-xl shadow-lg header-border">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center">
+                <span class="heart-icon">💖</span> 조동사 + have p.p. 마스터 <span class="heart-icon">✨</span>
+            </h1>
+            <p class="text-lg text-gray-500 mt-2">✨ 실생활 퀴즈 풀고, 작문으로 연습하기! ✨</p>
+        </header>
+
+        <!-- 학습 설명 카드 -->
+        <section id="explanation" class="card bg-white p-6 rounded-2xl border-2 border-secondary-purple/50">
+            <h2 class="text-2xl font-bold text-secondary-purple mb-4 flex items-center">
+                <span class="heart-icon">🌟</span> 핵심 문법 정리
+            </h2>
+            <div class="space-y-4 text-gray-700">
+                <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
+                    <span class="font-semibold text-lg text-primary-pink">must have p.p.</span>: <span class="font-bold">~했음에 틀림없다</span> (강한 확신!)
+                </div>
+                <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
+                    <span class="font-semibold text-lg text-primary-pink">cannot have p.p.</span>: <span class="font-bold">~했을 리가 없다</span> (강한 부정!)
+                </div>
+                <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
+                    <span class="font-semibold text-lg text-primary-pink">should have p.p.</span>: <span class="font-bold">~했어야 했는데 (안 해서 후회)</span> (후회/유감)
+                </div>
+                <div class="p-4 bg-light-bg rounded-lg border-l-4 border-primary-pink">
+                    <span class="font-semibold text-lg text-primary-pink">could have p.p.</span>: <span class="font-bold">~할 수도 있었는데 (안 함)</span> (과거의 능력/가능성)
+                </div>
+            </div>
+        </section>
+
+        <!-- 퀴즈 섹션 -->
+        <section id="quiz-area" class="card bg-white p-8 rounded-2xl space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 flex items-center"><span class="heart-icon">📝</span> 실생활 퀴즈</h2>
+            
+            <!-- 퀴즈 진행 상황 표시 -->
+            <p id="question-counter" class="text-lg text-secondary-purple font-medium">1/5</p>
+            
+            <!-- 문제 내용 -->
+            <div class="bg-light-bg p-6 rounded-2xl border-2 border-secondary-purple/50">
+                <p id="context" class="text-base italic text-gray-500 mb-3"></p>
+                <p id="question-text" class="text-xl font-semibold text-gray-900"></p>
+            </div>
+
+            <!-- 선택지 버튼 컨테이너 -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- 옵션 버튼들이 여기에 동적으로 삽입됩니다. -->
+            </div>
+
+            <!-- 피드백 및 설명 영역 -->
+            <div id="feedback-area" class="min-h-[100px] space-y-3 pt-4 border-t border-gray-100 hidden">
+                <p id="feedback-message" class="text-xl font-bold feedback-message"></p>
+                <div id="explanation-box" class="p-3 bg-light-bg rounded-xl text-gray-700 border-l-4 border-yellow-400">
+                    <span class="font-bold text-yellow-700">💛 설명:</span> <span id="explanation-text"></span>
+                </div>
+                <button id="next-button" onclick="nextQuestion()" class="mt-4 w-full py-3 px-6 bg-primary-pink text-white font-semibold rounded-xl shadow-md hover:bg-pink-400 transition duration-150" style="display: none;">
+                    다음 문제 →
+                </button>
+            </div>
+        </section>
+
+        <!-- 결과 요약 섹션 (숨겨짐) -->
+        <section id="results-area" class="card bg-white p-8 rounded-2xl text-center space-y-6 hidden">
+            <h2 class="text-3xl font-bold text-secondary-purple">퀴즈 완료! 🎉</h2>
+            <p id="final-score" class="text-4xl font-extrabold text-primary-pink"></p>
+            <p id="score-comment" class="text-lg text-gray-600"></p>
+            <button onclick="showWritingPractice()" class="py-3 px-8 bg-secondary-purple text-white font-semibold rounded-xl shadow-md hover:bg-purple-500 transition duration-150">
+                작문 연습 시작하기!
+            </button>
+        </section>
+
+        <!-- 작문 연습 섹션 (숨겨짐) -->
+        <section id="writing-area" class="card bg-white p-8 rounded-2xl space-y-6 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 flex items-center"><span class="heart-icon">✍️</span> 실생활 작문 연습</h2>
+            <p class="text-gray-600">제시된 상황을 읽고, 괄호 안에 있는 조동사 have p.p.를 사용하여 문장을 완성해 보세요!</p>
+
+            <div id="writing-prompts" class="space-y-6">
+                <!-- 작문 프롬프트가 여기에 동적으로 삽입됩니다. -->
+            </div>
+
+            <button onclick="startQuiz()" class="py-3 px-8 bg-primary-pink text-white font-semibold rounded-xl shadow-md hover:bg-pink-400 transition duration-150">
+                퀴즈 다시 시작하기
+            </button>
+        </section>
+
+    </div>
+
+    <script>
+        // 퀴즈 데이터 (실생활 예시로 업데이트) - 데이터는 유지됩니다.
+        const quizData = [
+            {
+                context: "Context: 네가 가장 좋아하는 아이돌 그룹의 콘서트 티켓팅에 실패했어. 네가 어제 좀 더 일찍 PC방에 갔어야 했다고 후회하고 있어.",
+                sentence: "I failed to get the concert ticket. I ____ gone to the PC room earlier yesterday.",
+                options: ["must have", "should have", "could have"],
+                answer: "should have",
+                explanation_kr: "티켓팅에 실패한 상황에서 '더 일찍 갔어야 했는데(안 갔다)'고 후회하는 내용이므로 'should have p.p.'가 적절합니다."
+            },
+            {
+                context: "Context: 네 단짝 친구가 어제 아팠다고 학교에 안 왔는데, 오늘 SNS에 올라온 사진을 보니 놀이공원에서 신나게 놀고 있네? 너는 친구가 거짓말을 했을 리가 없다고 강하게 믿고 싶어.",
+                sentence: "My best friend said she was sick, but she's at an amusement park in a photo. She ____ lied to me.",
+                options: ["might have", "cannot have", "must have"],
+                answer: "cannot have",
+                explanation_kr: "친구를 믿고 싶어 거짓말을 '했을 리가 없다'고 강하게 부정하는 추측이므로 'cannot have p.p.'가 가장 적절합니다. (설마...!)"
+            },
+            {
+                context: "Context: 오늘 점심시간에 네가 아끼던 예쁜 핑크색 펜이 없어졌어. 쉬는 시간에 누가 네 가방을 만지는 것을 본 것 같아.",
+                sentence: "My pink pen is missing. Someone ____ taken it while I was away.",
+                options: ["must have", "should have", "could have"],
+                answer: "must have",
+                explanation_kr: "누군가 가방을 만지는 것을 보았고 펜이 사라진 상황이므로, '누군가 가져갔음에 틀림없다'는 강한 추측의 'must have p.p.'가 적합합니다."
+            },
+            {
+                context: "Context: 수학 숙제를 제출했는데, 선생님이 채점하신 것을 보니 계산 실수가 딱 한 번 있었다면 만점을 받았을 수도 있었던 상황이야.",
+                sentence: "I only made one small mistake. I ____ gotten a perfect score.",
+                options: ["must have", "could have", "should have"],
+                answer: "could have",
+                explanation_kr: "한 번의 실수만 아니었다면 만점을 '받을 수도 있었다'는 과거의 능동적인 가능성을 표현하므로 'could have p.p.'가 적절합니다."
+            },
+            {
+                context: "Context: 어제 밤 10시에 친구에게 메시지를 보냈는데 아직 답장이 없어. 친구가 잠이 들었을 수도 있고, 아니면 학원에서 공부 중일 수도 있어. (약한 추측)",
+                sentence: "I texted my friend, but no reply yet. She ____ fallen asleep already.",
+                options: ["must have", "might have", "cannot have"],
+                answer: "might have",
+                explanation_kr: "답장이 없는 상황에 대해 '잠들었을지도 모른다'는 약한 추측을 나타내므로 'might have p.p.'가 가장 적절합니다."
+            }
+        ];
+
+        // 작문 연습 데이터 - 데이터는 유지됩니다.
+        const writingPrompts = [
+            {
+                context: "Context: 어제 친구들과 같이 떡볶이를 먹었는데, 매운 것을 못 먹는 친구가 너무 매워했어. 나는 매운 줄 몰랐던 것이 '틀림없다'고 생각해.",
+                target: "must have p.p.",
+                sentence_start: "She",
+                hint: "must have known"
+            },
+            {
+                context: "Context: 엄마 생신 선물을 현금으로 드렸더니, 엄마가 '예쁜 꽃다발을 사 왔어야 했는데'라고 아쉬워하셨어.",
+                target: "should have p.p.",
+                sentence_start: "I",
+                hint: "should have bought"
+            },
+            {
+                context: "Context: 학교 축제에서 네가 노래를 불렀다면, 엄청 인기가 많아졌을 수도 있었다고 친구들이 말해.",
+                target: "could have p.p.",
+                sentence_start: "I",
+                hint: "could have become"
+            }
+        ];
+
+        // 전역 상태 변수
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+        
+        // DOM 요소 참조
+        const questionCounter = document.getElementById('question-counter');
+        const contextEl = document.getElementById('context');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const explanationText = document.getElementById('explanation-text');
+        const nextButton = document.getElementById('next-button');
+        const resultsArea = document.getElementById('results-area');
+        const quizArea = document.getElementById('quiz-area');
+        const finalScore = document.getElementById('final-score');
+        const scoreComment = document.getElementById('score-comment');
+        const writingArea = document.getElementById('writing-area');
+        const writingPromptsContainer = document.getElementById('writing-prompts');
+        
+        /**
+         * 퀴즈를 시작하거나 재시작합니다.
+         */
+        function startQuiz() {
+            // 상태 초기화
+            currentQuestionIndex = 0;
+            score = 0;
+            answered = false;
+
+            // UI 상태 변경
+            resultsArea.classList.add('hidden');
+            writingArea.classList.add('hidden'); // 작문 섹션 숨기기
+            quizArea.classList.remove('hidden');
+            feedbackArea.classList.add('hidden');
+            
+            // 첫 번째 문제 로드
+            loadQuestion();
+        }
+
+        /**
+         * 퀴즈가 끝나면 작문 연습 섹션을 보여줍니다.
+         */
+        function showWritingPractice() {
+            resultsArea.classList.add('hidden');
+            quizArea.classList.add('hidden');
+            writingArea.classList.remove('hidden');
+            renderWritingPrompts();
+        }
+
+        /**
+         * 작문 연습 UI를 동적으로 생성합니다.
+         */
+        function renderWritingPrompts() {
+            writingPromptsContainer.innerHTML = '';
+            writingPrompts.forEach((prompt, index) => {
+                const promptDiv = document.createElement('div');
+                // 스타일 유지
+                promptDiv.className = 'writing-prompt p-4 rounded-lg space-y-3';
+                promptDiv.innerHTML = `
+                    <p class="text-sm font-semibold text-secondary-purple">상황 ${index + 1}:</p>
+                    <p class="text-gray-800">${prompt.context}</p>
+                    <p class="text-xs text-primary-pink font-bold">🎯 사용할 조동사: <span class="text-lg">${prompt.target}</span></p>
+                    <div class="flex flex-col space-y-2">
+                        <label for="answer-${index}" class="text-gray-700 font-medium">${prompt.sentence_start} ____</label>
+                        <textarea id="answer-${index}" rows="2" placeholder="여기에 영어 문장을 완성하세요. (예: ${prompt.hint} the concert tickets...)" 
+                                  class="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary-pink focus:border-primary-pink"></textarea>
+                        <button class="py-2 px-4 bg-secondary-purple text-white rounded-lg text-sm hover:bg-purple-500 transition duration-150" 
+                                onclick="showHint(${index}, '${prompt.hint}')">
+                            힌트 보기 (동사구)
+                        </button>
+                        <p id="hint-display-${index}" class="text-correct-green font-bold mt-2" style="display: none;">
+                            💡 핵심 동사구: ${prompt.hint} + ...
+                        </p>
+                    </div>
+                `;
+                writingPromptsContainer.appendChild(promptDiv);
+            });
+        }
+
+        /**
+         * 작문 힌트를 보여줍니다.
+         * @param {number} index - 프롬프트 인덱스
+         * @param {string} hintText - 보여줄 힌트 텍스트
+         */
+        function showHint(index, hintText) {
+            const hintDisplay = document.getElementById(`hint-display-${index}`);
+            hintDisplay.style.display = 'block';
+        }
+
+        /**
+         * 다음 문제를 로드하거나 결과를 표시합니다.
+         */
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                answered = false;
+                feedbackArea.classList.add('hidden');
+                nextButton.style.display = 'none';
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * 현재 인덱스의 문제를 UI에 로드합니다.
+         */
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // 문제 번호 업데이트
+            questionCounter.textContent = `${currentQuestionIndex + 1}/${quizData.length}`;
+            
+            // 지문 업데이트
+            contextEl.textContent = currentQuestion.context;
+            
+            // 질문 텍스트 업데이트. 빈칸 처리를 위해 '____'를 하이라이트
+            questionText.innerHTML = currentQuestion.sentence.replace(
+                '____', 
+                '<span class="text-primary-pink font-extrabold underline">____</span>'
+            );
+            
+            // 선택지 버튼 생성 및 이벤트 리스너 부착
+            optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                // 버튼 스타일을 아기자기하게 변경 (둥근 모서리, hover 효과)
+                button.className = 'option-button py-3 px-4 rounded-xl border-2 border-secondary-purple bg-white text-secondary-purple font-semibold shadow-sm hover:bg-light-bg disabled:opacity-70 disabled:cursor-not-allowed';
+                button.onclick = () => checkAnswer(option, button);
+                button.id = `option-${option.replace(/\s/g, '-')}`; // 고유 ID 부여
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * 사용자가 선택한 답을 확인하고 피드백을 표시합니다.
+         * @param {string} selectedOption - 사용자가 선택한 옵션 텍스트
+         * @param {HTMLElement} clickedButton - 클릭된 버튼 요소
+         */
+        function checkAnswer(selectedOption, clickedButton) {
+            if (answered) return; // 이미 답을 선택했으면 무시
+            answered = true;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedOption === currentQuestion.answer;
+            
+            // 모든 버튼 비활성화
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+
+            // 피드백 메시지 및 스타일 설정
+            feedbackArea.classList.remove('hidden');
+            
+            if (isCorrect) {
+                score++;
+                feedbackMessage.textContent = "✅ 짝짝짝! 정답이에요! (Great job!)";
+                feedbackMessage.className = 'text-xl font-bold text-correct-green feedback-message';
+                clickedButton.classList.remove('bg-white', 'border-secondary-purple', 'text-secondary-purple');
+                // 정답은 부드러운 민트색 배경
+                clickedButton.classList.add('bg-correct-green', 'text-gray-800', 'border-correct-green', 'ring-4', 'ring-green-300/50');
+            } else {
+                feedbackMessage.textContent = "❌ 아쉽지만 오답이에요. (Keep trying!)";
+                feedbackMessage.className = 'text-xl font-bold text-incorrect-red feedback-message';
+                
+                // 오답 버튼 스타일 적용 (연한 빨강 배경)
+                clickedButton.classList.remove('bg-white', 'border-secondary-purple', 'text-secondary-purple');
+                clickedButton.classList.add('bg-incorrect-red', 'text-gray-800', 'border-incorrect-red');
+                
+                // 정답 버튼 하이라이트 (라벤더 배경, 흰색 텍스트)
+                const correctAnswerButton = document.getElementById(`option-${currentQuestion.answer.replace(/\s/g, '-')}`);
+                if (correctAnswerButton) {
+                    correctAnswerButton.classList.remove('bg-white', 'text-secondary-purple', 'shadow-sm');
+                    correctAnswerButton.classList.add('bg-secondary-purple', 'text-white', 'font-extrabold', 'border-secondary-purple', 'ring-2', 'ring-purple-400');
+                }
+            }
+
+            // 설명 표시
+            explanationText.textContent = currentQuestion.explanation_kr;
+            
+            // 다음 버튼 표시
+            nextButton.style.display = 'block';
+        }
+
+        /**
+         * 퀴즈 결과를 계산하고 표시합니다.
+         */
+        function showResults() {
+            quizArea.classList.add('hidden');
+            resultsArea.classList.remove('hidden');
+            
+            const totalQuestions = quizData.length;
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            finalScore.textContent = `${score} / ${totalQuestions} (${percentage}%)`;
+
+            let comment = "";
+            if (percentage === 100) {
+                comment = "완벽해요! 조동사 have p.p. 퀸카 등극! ✨ 이제 작문으로 넘어가 볼까요?";
+            } else if (percentage >= 80) {
+                comment = "정말 잘했어요! 몇 가지만 더 복습하면 완벽해질 거예요! 바로 작문 연습으로 Go Go! 💖";
+            } else if (percentage >= 50) {
+                comment = "핵심 개념은 잡았어요! 헷갈리는 부분이 있다면 문법 정리 한 번 더 보고 작문 연습 해봅시다! 📚";
+            } else {
+                comment = "아직은 어려울 수 있어요. '핵심 문법 정리' 부분을 꼼꼼히 다시 읽고 작문 연습을 통해 실력을 다져보세요! 💪";
+            }
+            scoreComment.textContent = comment;
+        }
+
+        // 페이지 로드 시 퀴즈 시작
+        window.onload = startQuiz;
+    </script>
+
+</body>
+</html>
